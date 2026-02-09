@@ -18,7 +18,7 @@ export async function getAuthCookie(
     const cookie = response.headers.getSetCookie().at(0);
 
     if (!cookie) {
-        throw new Error("Auth cookie not found in server response");
+        throw new Error("Login or password is not correct");
     }
 
     return cookie;
@@ -27,9 +27,7 @@ export async function getAuthCookie(
 export function getAuthHandler(context: vscode.ExtensionContext) {
     return async function () {
         const { email, password } = await getAuthData();
-        if (!email || !password) {
-            return; // ?
-        }
+
         const cookie = await getAuthCookie(email, password);
 
         await context.secrets.store("nsuts.email", email);
