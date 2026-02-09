@@ -7,6 +7,7 @@ import { ActiveTask, TasksContext } from "../types";
 import { updateSolutionResultStatus } from "../statusBar/solutionResult";
 import { ActiveTaskRepository } from "../repositories/activeTaskRepository";
 import { TasksContextRepository } from "../repositories/tasksContextRepository";
+import { ReportStatus } from "../api/api";
 
 export function getSubmitHandler(context: vscode.ExtensionContext) {
     return async function () {
@@ -125,8 +126,6 @@ export function getSubmitHandler(context: vscode.ExtensionContext) {
                     }
                 }
 
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-
                 await getReport(activeTask);
 
                 clearInterval(progressInterval);
@@ -136,33 +135,48 @@ export function getSubmitHandler(context: vscode.ExtensionContext) {
 }
 
 async function getReport(activeTask: ActiveTask) {
-    await client.POST("/olympiads/enter", {
-        body: { olympiad: activeTask.olympiadId },
-    });
-    await client.GET("/tours/enter", {
-        params: { query: { tour: Number(activeTask.tourId) } },
-    });
-    const res = await client.GET("/report/get_report");
-    if (!res.data && res.error) {
-        throw new Error("Couldn't fetch result");
-    }
-    const reports = res.data.submits;
-    if (!reports || reports.length < 1) {
-        vscode.window.showErrorMessage("There're not any reports");
-        return;
-    }
-    const report = reports
-        .filter((rep) => rep.task_id === activeTask.taskId)
-        .reduce((acc, cur) => (Number(acc.id) > Number(cur.id) ? acc : cur));
-    if (report.status === "4") {
-        //unsuccessful
+    const report = await pollResolvedReports(activeTask);
+    if (report.status === ReportStatus.Unsuccessful) {
         updateSolutionResultStatus(report.result_line);
     }
-    if (report.status === "3") {
-        // successful
+    if (report.status === ReportStatus.Successful) {
         updateSolutionResultStatus("Accepted!");
     }
     vscode.window.showInformationMessage(
         "Результат по задаче " + activeTask.name + " : " + report.result_line
     );
+}
+async function pollResolvedReports(activeTask: ActiveTask) {
+    for (let i = 0, t = 1500; ; i++) {
+        if (i > 25) {
+            throw new Error("Report check timeout");
+        }
+        await new Promise((resolve) => setTimeout(resolve, t));
+        await client.POST("/olympiads/enter", {
+            body: { olympiad: activeTask.olympiadId },
+        });
+        await client.GET("/tours/enter", {
+            params: { query: { tour: Number(activeTask.tourId) } },
+        });
+        const res = await client.GET("/report/get_report");
+        if (!res.data && res.error) {
+            throw new Error("Couldn't fetch result");
+        }
+        const reports = res.data.submits?.filter(
+            (rep) => rep.task_id === activeTask.taskId
+        );
+        if (!reports || reports.length < 1) {
+            throw new Error("There're not any reports");
+        }
+        const report = reports.reduce((acc, cur) =>
+            Number(acc.id) > Number(cur.id) ? acc : cur
+        );
+        if (
+            report.status === ReportStatus.Successful ||
+            report.status === ReportStatus.Unsuccessful
+        ) {
+            return report;
+        }
+        t = t > 15000 ? t : t * 2;
+    }
 }
