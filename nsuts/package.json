@@ -156,7 +156,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "codegen": "openapi-typescript --enum ../NSUTS_fresh_API.yaml -o src/api/api.d.ts",
+    "codegen": "openapi-typescript --enum ../NSUTS_fresh_API.yaml -o src/api/api.ts",
     "wdio": "wdio run ./wdio.conf.ts"
   },
   "devDependencies": {
