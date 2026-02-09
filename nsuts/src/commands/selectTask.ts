@@ -10,9 +10,8 @@ export function getSelectTaskHandler(context: vscode.ExtensionContext) {
         taskItem?: TaskTreeItem
     ): Promise<ActiveTask | undefined> {
         if (!taskItem) {
-            vscode.window.showInformationMessage(
-                "DEBUG: if you see this, something fked up"
-            );
+            vscode.window.showInformationMessage("Please, select task");
+            vscode.commands.executeCommand("workbench.view.extension.nsuts");
             return;
         }
 

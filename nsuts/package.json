@@ -93,7 +93,7 @@
         },
         {
           "command": "nsuts.select_task",
-          "when": "false"
+          "when": "nsuts.authorized"
         },
         {
           "command": "nsuts.select_files",
