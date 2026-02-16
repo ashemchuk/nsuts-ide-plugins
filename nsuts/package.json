@@ -59,10 +59,17 @@
           "icon": "resources/nsuts-icon-light.svg",
           "contextualTitle": "NSUTS",
           "visibility": "collapsed",
-          "when": "nsuts.authorized"
+          "when": "nsuts.authorized || !nsuts.authorized"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "task-tree",
+        "contents": "To get started, log in to NSUTS using your credentials\n[Authentificate](command:nsuts.auth)",
+        "when": "!nsuts.authorized"
+      }
+    ],
     "menus": {
       "editor/title": [
         {
