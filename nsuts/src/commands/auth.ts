@@ -42,6 +42,7 @@ export function getAuthHandler(context: vscode.ExtensionContext) {
             "nsuts.authorized",
             true
         );
+        await vscode.commands.executeCommand("nsuts.refresh_task_tree");
     };
 }
 

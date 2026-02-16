@@ -14,5 +14,6 @@ export function getLogoutHandler(context: ExtensionContext) {
         window.showInformationMessage("You're logged out");
         await client.POST("/logout");
         await commands.executeCommand("setContext", "nsuts.authorized", false);
+        await commands.executeCommand("nsuts.refresh_task_tree");
     };
 }

@@ -3,6 +3,8 @@ import {
     TreeItemCollapsibleState,
     TreeDataProvider,
     Uri,
+    EventEmitter,
+    Event,
 } from "vscode";
 import { client } from "../api/client";
 
@@ -51,6 +53,14 @@ type Item = OlympiadTreeItem | TourTreeItem | TaskTreeItem;
 
 export class TaskTreeDataProvider implements TreeDataProvider<Item> {
     constructor() {}
+    private _onDidChangeTreeData: EventEmitter<Item | undefined | null | void> =
+        new EventEmitter<Item | undefined | null | void>();
+    readonly onDidChangeTreeData: Event<Item | undefined | null | void> =
+        this._onDidChangeTreeData.event;
+
+    public refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
 
     public getTreeItem(element: Item) {
         return element;

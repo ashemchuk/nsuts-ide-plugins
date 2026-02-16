@@ -40,6 +40,11 @@
       {
         "command": "nsuts.select_compiler",
         "title": "NSUTS: Select compiler"
+      },
+      {
+        "command": "nsuts.refresh_task_tree",
+        "title": "NSUTS: Refresh tasks list",
+        "icon": "$(refresh)"
       }
     ],
     "viewsContainers": {
@@ -83,6 +88,13 @@
           "command": "nsuts.select_task",
           "when": "view == task-tree && viewItem == task",
           "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "nsuts.refresh_task_tree",
+          "group": "navigation",
+          "when": "nsuts.authorized"
         }
       ],
       "commandPalette": [
