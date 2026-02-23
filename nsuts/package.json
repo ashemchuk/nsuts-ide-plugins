@@ -3,6 +3,10 @@
   "displayName": "nsuts",
   "description": "",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashemchuk/nsuts-ide-plugins"
+  },
   "engines": {
     "vscode": "^1.105.0"
   },
@@ -176,7 +180,9 @@
     "lint": "eslint src",
     "test": "vscode-test",
     "codegen": "openapi-typescript --enum ../NSUTS_fresh_API.yaml -o src/api/api.ts",
-    "wdio": "wdio run ./wdio.conf.ts"
+    "wdio": "wdio run ./wdio.conf.ts",
+    "pack": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -186,6 +192,7 @@
     "@typescript-eslint/parser": "^8.45.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.7.1",
     "@wdio/cli": "^9.21.1",
     "@wdio/globals": "^9.17.0",
     "@wdio/json-reporter": "^9.20.0",
