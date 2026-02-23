@@ -3,3 +3,4 @@ out/
 .wdio-vscode-service/
 .vscode-test/
 .env
+*.vsix
