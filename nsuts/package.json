@@ -75,7 +75,7 @@
     "viewsWelcome": [
       {
         "view": "task-tree",
-        "contents": "To get started, log in to NSUTS using your credentials\n[Authentificate](command:nsuts.auth)",
+        "contents": "To get started, log in to NSUTS using your credentials\n[Authenticate](command:nsuts.auth)",
         "when": "!nsuts.authorized"
       }
     ],
