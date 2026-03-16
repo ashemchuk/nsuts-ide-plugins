@@ -42,7 +42,12 @@ class NsutsToolWindowFactory : ToolWindowFactory {
             }
 
             val authButton = JButton("Authenticate").apply {
-                addActionListener {}
+                addActionListener {
+                    val authDialog = AuthDialog()
+                    if (authDialog.showAndGet()) {
+                        logger.info("Successfully authenticated")
+                    }
+                }
             }
 
             add(titleLabel)
