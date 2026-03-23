@@ -5,8 +5,10 @@ import {
     Uri,
     EventEmitter,
     Event,
+    ThemeIcon,
 } from "vscode";
 import { client } from "../api/client";
+import { ReportStatus } from "../api/api";
 
 // olympiads -> tours -> tasks
 
@@ -19,7 +21,7 @@ class OlympiadTreeItem extends TreeItem {
         public readonly coverUrl: string
     ) {
         super(name, TreeItemCollapsibleState.Collapsed);
-
+        
         this.iconPath = {
             light: Uri.parse(`https://fresh.nsuts.ru${coverUrl}`),
             dark: Uri.parse(`https://fresh.nsuts.ru${coverUrl}`),
@@ -42,10 +44,17 @@ export class TaskTreeItem extends TreeItem {
         public readonly taskId: string,
         public readonly name: string,
         public readonly olympiadId: string,
-        public readonly tourId: string
+        public readonly tourId: string,
+        public readonly accepted: boolean
     ) {
         super(name, TreeItemCollapsibleState.None);
+
         this.contextValue = "task";
+
+        if (accepted) {
+            this.iconPath = new ThemeIcon("check");
+            this.tooltip = `${name} (Accepted)`;
+        }
     }
 }
 
@@ -98,10 +107,22 @@ export class TaskTreeDataProvider implements TreeDataProvider<Item> {
         });
 
         const { data } = await client.GET("/submit/submit_info");
+        const { data: reportData } = await client.GET("/report/get_report");
+        const acceptedTaskIds = new Set(
+            (reportData?.submits ?? [])
+                .filter((report) => report.status === ReportStatus.Successful)
+                .map((report) => report.task_id)
+        );
 
         return data?.tasks.map(
             ({ id, title }) =>
-                new TaskTreeItem(id, title, tour.olympiadId, tour.tourId)
+                new TaskTreeItem(
+                    id,
+                    title,
+                    tour.olympiadId,
+                    tour.tourId,
+                    acceptedTaskIds.has(id)
+                )
         );
     }
 
